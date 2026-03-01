@@ -23,7 +23,9 @@ const TodoList = () => {
 
         return data || [];
       } catch (error) {
-        console.log(error);
+        throw new Error(
+          error instanceof Error ? error.message : "Unknown error",
+        );
       }
     },
   });
