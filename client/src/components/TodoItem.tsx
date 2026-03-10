@@ -18,17 +18,25 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
         const res = await fetch(BASE_URL + `/todos/${todo._id}`, {
           method: "PATCH",
         });
-        const data = await res.json();
+
         if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
+          const text = await res.text();
+          throw new Error(text || "Request failed");
         }
+
+        return res.json().catch(() => null);
       } catch (error) {
-        console.log(error);
+        throw new Error(
+          error instanceof Error ? error.message : "Unknown error"
+        );
       }
     },
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+    onError: (error) => {
+      console.error(error);
     },
   });
 
@@ -44,7 +52,9 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
           throw new Error(data.error || "Something went wrong");
         }
       } catch (error) {
-        console.log(error);
+        throw new Error(
+          error instanceof Error ? error.message : "Unknown error"
+        );
       }
     },
 
